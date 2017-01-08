@@ -1,0 +1,7 @@
+*.obj
+objects/
+GL/
+GLFW/
+glm/
+Release/
+*.a
