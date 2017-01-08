@@ -12,6 +12,16 @@
 		DAEDDFEF1E227EE0000D1F28 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAEDDFEE1E227EE0000D1F28 /* CoreGraphics.framework */; };
 		DAEDDFF11E227EE5000D1F28 /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAEDDFF01E227EE5000D1F28 /* Cocoa.framework */; };
 		DAEDDFF31E227EEE000D1F28 /* IOKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DAEDDFF21E227EEE000D1F28 /* IOKit.framework */; };
+		DAEDE00F1E227FC4000D1F28 /* Camera.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAEDDFF41E227FC4000D1F28 /* Camera.cpp */; };
+		DAEDE0101E227FC4000D1F28 /* libGLEW.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DAEDDFF91E227FC4000D1F28 /* libGLEW.a */; };
+		DAEDE0111E227FC4000D1F28 /* libglfw3.a in Frameworks */ = {isa = PBXBuildFile; fileRef = DAEDDFFA1E227FC4000D1F28 /* libglfw3.a */; };
+		DAEDE0131E227FC4000D1F28 /* Mesh.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAEDDFFC1E227FC4000D1F28 /* Mesh.cpp */; };
+		DAEDE0141E227FC4000D1F28 /* Model3D.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAEDDFFE1E227FC4000D1F28 /* Model3D.cpp */; };
+		DAEDE0151E227FC4000D1F28 /* OpenGL_4_Application_VS2015.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAEDE0011E227FC4000D1F28 /* OpenGL_4_Application_VS2015.cpp */; };
+		DAEDE0161E227FC4000D1F28 /* Shader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAEDE0031E227FC4000D1F28 /* Shader.cpp */; };
+		DAEDE0171E227FC4000D1F28 /* SkyBox.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAEDE0071E227FC4000D1F28 /* SkyBox.cpp */; };
+		DAEDE0181E227FC4000D1F28 /* stb_image.c in Sources */ = {isa = PBXBuildFile; fileRef = DAEDE0091E227FC4000D1F28 /* stb_image.c */; };
+		DAEDE0191E227FC4000D1F28 /* stdafx.cpp in Sources */ = {isa = PBXBuildFile; fileRef = DAEDE00B1E227FC4000D1F28 /* stdafx.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -33,6 +43,32 @@
 		DAEDDFEE1E227EE0000D1F28 /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreGraphics.framework; path = System/Library/Frameworks/CoreGraphics.framework; sourceTree = SDKROOT; };
 		DAEDDFF01E227EE5000D1F28 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		DAEDDFF21E227EEE000D1F28 /* IOKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = IOKit.framework; path = System/Library/Frameworks/IOKit.framework; sourceTree = SDKROOT; };
+		DAEDDFF41E227FC4000D1F28 /* Camera.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Camera.cpp; sourceTree = "<group>"; };
+		DAEDDFF51E227FC4000D1F28 /* Camera.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Camera.hpp; sourceTree = "<group>"; };
+		DAEDDFF61E227FC4000D1F28 /* GL */ = {isa = PBXFileReference; lastKnownFileType = folder; path = GL; sourceTree = "<group>"; };
+		DAEDDFF71E227FC4000D1F28 /* GLFW */ = {isa = PBXFileReference; lastKnownFileType = folder; path = GLFW; sourceTree = "<group>"; };
+		DAEDDFF81E227FC4000D1F28 /* glm */ = {isa = PBXFileReference; lastKnownFileType = folder; path = glm; sourceTree = "<group>"; };
+		DAEDDFF91E227FC4000D1F28 /* libGLEW.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libGLEW.a; sourceTree = "<group>"; };
+		DAEDDFFA1E227FC4000D1F28 /* libglfw3.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libglfw3.a; sourceTree = "<group>"; };
+		DAEDDFFC1E227FC4000D1F28 /* Mesh.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Mesh.cpp; sourceTree = "<group>"; };
+		DAEDDFFD1E227FC4000D1F28 /* Mesh.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Mesh.hpp; sourceTree = "<group>"; };
+		DAEDDFFE1E227FC4000D1F28 /* Model3D.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Model3D.cpp; sourceTree = "<group>"; };
+		DAEDDFFF1E227FC4000D1F28 /* Model3D.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Model3D.hpp; sourceTree = "<group>"; };
+		DAEDE0001E227FC4000D1F28 /* objects */ = {isa = PBXFileReference; lastKnownFileType = folder; path = objects; sourceTree = "<group>"; };
+		DAEDE0011E227FC4000D1F28 /* OpenGL_4_Application_VS2015.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = OpenGL_4_Application_VS2015.cpp; sourceTree = "<group>"; };
+		DAEDE0021E227FC4000D1F28 /* Release */ = {isa = PBXFileReference; lastKnownFileType = folder; path = Release; sourceTree = "<group>"; };
+		DAEDE0031E227FC4000D1F28 /* Shader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Shader.cpp; sourceTree = "<group>"; };
+		DAEDE0041E227FC4000D1F28 /* Shader.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = Shader.hpp; sourceTree = "<group>"; };
+		DAEDE0051E227FC4000D1F28 /* shaders */ = {isa = PBXFileReference; lastKnownFileType = folder; path = shaders; sourceTree = "<group>"; };
+		DAEDE0061E227FC4000D1F28 /* skybox */ = {isa = PBXFileReference; lastKnownFileType = folder; path = skybox; sourceTree = "<group>"; };
+		DAEDE0071E227FC4000D1F28 /* SkyBox.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SkyBox.cpp; sourceTree = "<group>"; };
+		DAEDE0081E227FC4000D1F28 /* SkyBox.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = SkyBox.hpp; sourceTree = "<group>"; };
+		DAEDE0091E227FC4000D1F28 /* stb_image.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = stb_image.c; sourceTree = "<group>"; };
+		DAEDE00A1E227FC4000D1F28 /* stb_image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stb_image.h; sourceTree = "<group>"; };
+		DAEDE00B1E227FC4000D1F28 /* stdafx.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = stdafx.cpp; sourceTree = "<group>"; };
+		DAEDE00C1E227FC4000D1F28 /* stdafx.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = stdafx.h; sourceTree = "<group>"; };
+		DAEDE00D1E227FC4000D1F28 /* targetver.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = targetver.h; sourceTree = "<group>"; };
+		DAEDE00E1E227FC4000D1F28 /* tiny_obj_loader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = tiny_obj_loader.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -41,7 +77,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				DAEDDFF31E227EEE000D1F28 /* IOKit.framework in Frameworks */,
+				DAEDE0111E227FC4000D1F28 /* libglfw3.a in Frameworks */,
 				DAEDDFF11E227EE5000D1F28 /* Cocoa.framework in Frameworks */,
+				DAEDE0101E227FC4000D1F28 /* libGLEW.a in Frameworks */,
 				DAEDDFEF1E227EE0000D1F28 /* CoreGraphics.framework in Frameworks */,
 				DAEDDFED1E227EDA000D1F28 /* CoreVideo.framework in Frameworks */,
 				DAEDDFEB1E227ED4000D1F28 /* OpenGL.framework in Frameworks */,
@@ -71,6 +109,32 @@
 		DAEDDFE11E227EC9000D1F28 /* GPS */ = {
 			isa = PBXGroup;
 			children = (
+				DAEDDFF41E227FC4000D1F28 /* Camera.cpp */,
+				DAEDDFF51E227FC4000D1F28 /* Camera.hpp */,
+				DAEDDFF61E227FC4000D1F28 /* GL */,
+				DAEDDFF71E227FC4000D1F28 /* GLFW */,
+				DAEDDFF81E227FC4000D1F28 /* glm */,
+				DAEDDFF91E227FC4000D1F28 /* libGLEW.a */,
+				DAEDDFFA1E227FC4000D1F28 /* libglfw3.a */,
+				DAEDDFFC1E227FC4000D1F28 /* Mesh.cpp */,
+				DAEDDFFD1E227FC4000D1F28 /* Mesh.hpp */,
+				DAEDDFFE1E227FC4000D1F28 /* Model3D.cpp */,
+				DAEDDFFF1E227FC4000D1F28 /* Model3D.hpp */,
+				DAEDE0001E227FC4000D1F28 /* objects */,
+				DAEDE0011E227FC4000D1F28 /* OpenGL_4_Application_VS2015.cpp */,
+				DAEDE0021E227FC4000D1F28 /* Release */,
+				DAEDE0031E227FC4000D1F28 /* Shader.cpp */,
+				DAEDE0041E227FC4000D1F28 /* Shader.hpp */,
+				DAEDE0051E227FC4000D1F28 /* shaders */,
+				DAEDE0061E227FC4000D1F28 /* skybox */,
+				DAEDE0071E227FC4000D1F28 /* SkyBox.cpp */,
+				DAEDE0081E227FC4000D1F28 /* SkyBox.hpp */,
+				DAEDE0091E227FC4000D1F28 /* stb_image.c */,
+				DAEDE00A1E227FC4000D1F28 /* stb_image.h */,
+				DAEDE00B1E227FC4000D1F28 /* stdafx.cpp */,
+				DAEDE00C1E227FC4000D1F28 /* stdafx.h */,
+				DAEDE00D1E227FC4000D1F28 /* targetver.h */,
+				DAEDE00E1E227FC4000D1F28 /* tiny_obj_loader.h */,
 			);
 			path = GPS;
 			sourceTree = "<group>";
@@ -145,6 +209,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DAEDE0191E227FC4000D1F28 /* stdafx.cpp in Sources */,
+				DAEDE0171E227FC4000D1F28 /* SkyBox.cpp in Sources */,
+				DAEDE0141E227FC4000D1F28 /* Model3D.cpp in Sources */,
+				DAEDE0151E227FC4000D1F28 /* OpenGL_4_Application_VS2015.cpp in Sources */,
+				DAEDE0131E227FC4000D1F28 /* Mesh.cpp in Sources */,
+				DAEDE0161E227FC4000D1F28 /* Shader.cpp in Sources */,
+				DAEDE00F1E227FC4000D1F28 /* Camera.cpp in Sources */,
+				DAEDE0181E227FC4000D1F28 /* stb_image.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -242,6 +314,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEVELOPMENT_TEAM = S2SMX92WPV;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/GPS",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Debug;
@@ -250,6 +326,10 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				DEVELOPMENT_TEAM = S2SMX92WPV;
+				LIBRARY_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(PROJECT_DIR)/GPS",
+				);
 				PRODUCT_NAME = "$(TARGET_NAME)";
 			};
 			name = Release;
@@ -273,6 +353,7 @@
 				DAEDDFE81E227EC9000D1F28 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

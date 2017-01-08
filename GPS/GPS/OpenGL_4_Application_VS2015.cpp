@@ -20,7 +20,7 @@
 #include "Shader.hpp"
 #include "Camera.hpp"
 #define TINYOBJLOADER_IMPLEMENTATION
-
+#define MODEL_COUNT 100
 #include "Model3D.hpp"
 #include "Mesh.hpp"
 #include <dirent.h>
@@ -33,6 +33,8 @@ GLFWwindow* glWindow = NULL;
 
 const GLuint SHADOW_WIDTH = 2048, SHADOW_HEIGHT = 2048;
 
+
+//matrici si prostii de genu
 glm::mat4 model;
 GLuint modelLoc;
 glm::mat4 view;
@@ -44,11 +46,15 @@ GLuint normalMatrixLoc;
 glm::mat3 lightDirMatrix;
 GLuint lightDirMatrixLoc;
 
+
+//directia luminii globale (cred)
 glm::vec3 lightDir;
 GLuint lightDirLoc;
 glm::vec3 lightColor;
 GLuint lightColorLoc;
 
+
+//Camera si alte prostii pt miscare la mouse
 gps::Camera myCamera(glm::vec3(0.0f, 1.0f, 2.5f), glm::vec3(0.0f, 0.0f, 0.0f));
 GLfloat cameraSpeed = 0.05f;
 float cameraYaw= -90.0f;
@@ -57,18 +63,57 @@ float lastY = glWindowHeight/2;
 float lastX = glWindowWidth/2;
 bool firstMouse = true;
 bool pressedKeys[1024];
+
+//niste floats sa pot misca prostii
 GLfloat angle;
 GLfloat lightAngle;
 
+
+//modele 3d
 gps::Model3D myModel;
 gps::Model3D ground;
 gps::Model3D lightCube;
+int modelCount;
+gps::Model3D models[MODEL_COUNT]; //modele incarcate automat
+
+//shaders
 gps::Shader myCustomShader;
 gps::Shader lightShader;
 gps::Shader depthMapShader;
 
+//pt umbre (shadow map object si textura)
 GLuint shadowMapFBO;
 GLuint depthMapTexture;
+
+
+//ia din foldere si subfoldere toate modelele si le randeaza
+void importModels(const char * path){
+    DIR           *d;
+    struct dirent *dir;
+    d = opendir(path);
+    char p[256];
+    if (d)
+    {
+        while ((dir = readdir(d)) != NULL)
+        {
+            if(strcmp(dir->d_name,".")&&strcmp(dir->d_name,"..")){
+                if(strlen(dir->d_name) > 4 && !strcmp(dir->d_name + strlen(dir->d_name) - 4, ".obj")){
+                    //printf("%s\n", dir->d_name);
+                    sprintf(p,"%s/%s",path,dir->d_name);
+                    printf("%s\n",p); //path complet
+                    
+                    models[modelCount++] = gps::Model3D(p,path);
+                }else if (dir->d_type==DT_DIR){
+                    sprintf(p,"%s/%s/", path,dir->d_name);
+                    importModels(p);
+                }
+                
+            }
+        }
+        
+        closedir(d);
+    }
+}
 
 GLenum glCheckError_(const char *file, int line)
 {
@@ -267,6 +312,7 @@ void initOpenGLState()
 	glFrontFace(GL_CCW); // GL_CCW for counter clock-wise
 }
 
+
 void initFBOs()
 {
 	//generate FBO ID
@@ -344,6 +390,15 @@ void initUniforms()
 	lightShader.useShaderProgram();
 	glUniformMatrix4fv(glGetUniformLocation(lightShader.shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 }
+
+
+void drawModels(gps::Shader shader)
+{
+    
+}
+
+
+
 
 void renderScene()
 {
@@ -442,21 +497,21 @@ void renderScene()
 
 	//draw a white cube around the light
 
-	lightShader.useShaderProgram();
-
-	glUniformMatrix4fv(glGetUniformLocation(lightShader.shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
-
-	model = glm::rotate(glm::mat4(1.0f), glm::radians(lightAngle), glm::vec3(0.0f, 1.0f, 0.0f));
-	model = glm::translate(model, lightDir);
-	model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
-	glUniformMatrix4fv(glGetUniformLocation(lightShader.shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
-
-	lightCube.Draw(lightShader);
+//	lightShader.useShaderProgram();
+//
+//	glUniformMatrix4fv(glGetUniformLocation(lightShader.shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
+//
+//	model = glm::rotate(glm::mat4(1.0f), glm::radians(lightAngle), glm::vec3(0.0f, 1.0f, 0.0f));
+//	model = glm::translate(model, lightDir);
+//	model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
+//	glUniformMatrix4fv(glGetUniformLocation(lightShader.shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
+//
+//	lightCube.Draw(lightShader);
 }
 
 int main(int argc, const char * argv[]) {
 
-    int dir = chdir("/Users/macbookpro/home stuff/xcode projects/Shadows_laborator/Shadows_laborator/");
+    int dir = chdir("/Users/macbookpro/home stuff/xcode projects/git/Grafica/GPS/GPS");
     if(dir != 0){
         printf("Could not change working dir.\n");
         return 0;
@@ -469,6 +524,8 @@ int main(int argc, const char * argv[]) {
 	initShaders();
 	initUniforms();	
 	glCheckError();
+    
+    
 	while (!glfwWindowShouldClose(glWindow)) {
 		renderScene();
 

@@ -23,7 +23,6 @@ vec3 specular;
 float specularStrength = 0.5f;
 float shininess = 64.0f;
 
-vec3 o;
 
 void computeLightComponents()
 {		
