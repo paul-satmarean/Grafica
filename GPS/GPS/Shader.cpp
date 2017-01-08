@@ -69,7 +69,7 @@ namespace gps {
         //check compilation status
         shaderCompileLog(vertexShader);
 
-        //read, parse and compile the vertex shader
+        //read, parse and compile the fragment shader
         std::string f = readShaderFile(fragmentShaderFileName);
         const GLchar* fragmentShaderString = f.c_str();
         GLuint fragmentShader;

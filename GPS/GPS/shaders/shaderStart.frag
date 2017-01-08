@@ -1,9 +1,13 @@
 #version 410 core
 
+#define LIGHT_COUNT 2
+
 in vec3 normal;
 in vec4 fragPosEye;
 in vec4 fragPosLightSpace;
 in vec2 fragTexCoords;
+in vec3 light[LIGHT_COUNT];
+
 
 out vec4 fColor;
 
@@ -16,14 +20,16 @@ uniform sampler2D diffuseTexture;
 uniform sampler2D specularTexture;
 uniform sampler2D shadowMap;
 
+
 vec3 ambient;
 float ambientStrength = 0.2f;
 vec3 diffuse;
 vec3 specular;
 float specularStrength = 0.5f;
 float shininess = 64.0f;
-
-
+float constant = 1.0f;
+float linear = 0.0045f;
+float quadratic = 0.0075f;
 void computeLightComponents()
 {		
 	vec3 cameraPosEye = vec3(0.0f);//in eye coordinates, the viewer is situated at the origin
@@ -41,19 +47,78 @@ void computeLightComponents()
 	vec3 halfVector = normalize(lightDirN + viewDirN);
 		
 	//compute ambient light
-	ambient = ambientStrength * lightColor;
+    vec3 lambient = ambientStrength * lightColor;
 	
 	//compute diffuse light
-	diffuse = max(dot(normalEye, lightDirN), 0.0f) * lightColor;
+	vec3 ldiffuse = max(dot(normalEye, lightDirN), 0.0f) * lightColor;
 	
 	//compute specular light
 	float specCoeff = pow(max(dot(halfVector, normalEye), 0.0f), shininess);
-	specular = specularStrength * specCoeff * lightColor;
+	vec3 lspecular = specularStrength * specCoeff * lightColor;
+    specular += lspecular;
+    ambient += lambient;
+    diffuse += ldiffuse;
 }
 
+vec3 calcPointLight(vec3 light)
+{
+    
+    
+    vec3 cameraPosEye = vec3(0.0f);//in eye coordinates, the viewer is situated at the origin
+    
+    //transform normal
+    vec3 normalEye = normalize(normalMatrix * normal);
+    
+    //compute light direction
+    vec3 lightDirN = normalize(light - fragPosEye.xyz);
+    
+    //compute view direction
+    vec3 viewDirN = normalize(cameraPosEye - fragPosEye.xyz);
+    
+    //compute half vector
+    vec3 halfVector = normalize(lightDirN + viewDirN);
+    
+    //compute distance to light
+    float dist = length(light - fragPosEye.xyz);
+    
+    //compute attenuation
+    float att = 1.0f / (constant + linear * dist + quadratic * (dist * dist));
+    
+    
+    //compute specular light
+    vec3 reflection = reflect(-lightDirN, normalEye);
+    
+    float specCoeff = pow(max(dot(normalEye, halfVector), 0.0f), shininess);
+    specular = specularStrength * specCoeff * lightColor;
+    
+    
+    //compute ambient light
+    //vec3 ambient = att * ambientStrength * lightColor;
+    vec3 diffuse = att * max(dot(normalEye, lightDirN), 0.0f) * lightColor;
+    vec3 specular = att * specularStrength * specCoeff * lightColor;
+    
+    //ambient *= vec3(texture(diffuseTexture, fragTexCoords));
+    diffuse *= vec3(texture(diffuseTexture, fragTexCoords));
+    specular *= vec3(texture(specularTexture, fragTexCoords));
+    
+    return ( diffuse + specular);
+    
+    //compute ambient light
+//    ambient += att * ambientStrength * lightColor;
+//    diffuse += att * max(dot(normalEye, lightDirN), 0.0f) * lightColor;
+//    specular += att * specularStrength * specCoeff * lightColor;
+//    
+//    ambient *= vec3(texture(diffuseTexture, fragTexCoords));
+//    diffuse *= vec3(texture(diffuseTexture, fragTexCoords));
+//    specular *= vec3(texture(specularTexture, fragTexCoords));
+//    
+    //return (ambient + diffuse + specular);
+}
+
+
 float computeShadow()
-{	
-	// perform perspective divide
+{
+    // perform perspective divide
     vec3 normalizedCoords = fragPosLightSpace.xyz / fragPosLightSpace.w;
     if(normalizedCoords.z > 1.0f)
         return 0.0f;
@@ -72,6 +137,10 @@ float computeShadow()
 
 void main() 
 {
+    ambient = vec3(0.0f);
+    specular = vec3(0.0f);
+    diffuse = vec3(0.0f);
+    
 	computeLightComponents();
 	
 	float shadow = computeShadow();
@@ -82,8 +151,16 @@ void main()
 	//modulate woth specular map
 	specular *= vec3(texture(specularTexture, fragTexCoords));
 	
+//    for(int i =0;i<LIGHT_COUNT;i++){
+//        calcPointLight(light[i]);
+//    }
+    
 	//modulate with shadow
 	vec3 color = min((ambient + (1.0f - shadow)*diffuse) + (1.0f - shadow)*specular, 1.0f);
+    
+    for(int i =0;i<LIGHT_COUNT;i++){
+        color += calcPointLight(light[i]);
+    }
     
     fColor = vec4(color, 1.0f);
     //fColor = vec4(o, 1.0f);

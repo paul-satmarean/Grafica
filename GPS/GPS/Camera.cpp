@@ -7,6 +7,7 @@
 //
 
 #include "Camera.hpp"
+//#define GODMODE
 
 
 glm::mat4 viewMatrix;
@@ -35,9 +36,13 @@ namespace gps{
     
     void Camera::move(gps::MOVE_DIRECTION direction, float speed){
         glm::vec3 modDir = cameraDirection;
-        //modDir.y = 0.0f;
+#ifndef GODMODE
+        modDir.y = 0.0f;
+#endif
         glm::vec3 modRightDir = cameraRightDirection;
-        //modRightDir.y = 0.0f;
+#ifndef GODMODE
+        modRightDir.y = 0.0f;
+#endif
         switch (direction) {
             case MOVE_FORWARD:
                 cameraPosition += modDir * speed;
