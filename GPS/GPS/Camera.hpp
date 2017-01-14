@@ -24,11 +24,13 @@ namespace gps {
         void move(MOVE_DIRECTION direction, float speed);
         void rotate(float pitch, float yaw);
         glm::vec3 getCameraTarget();
+        
         glm::vec3 cameraPosition;
+        glm::vec3 cameraDirection;
     private:
         
         glm::vec3 cameraTarget;
-        glm::vec3 cameraDirection;
+        
         glm::vec3 cameraRightDirection;
     };
     

@@ -19,17 +19,17 @@
 #include <unistd.h>
 #include "Shader.hpp"
 #include "Camera.hpp"
-
 #include "Model3D.hpp"
 #include "Mesh.hpp"
 #include <dirent.h>
 #include <stdio.h>
 #include <string.h>
-
+#include "SkyBox.hpp"
 
 
 #define MODEL_COUNT 100
 #define LIGHT_COUNT 2
+
 
 
 int glWindowWidth = 1280;
@@ -78,15 +78,18 @@ bool pressedKeys[1024];
 
 //niste floats sa pot misca prostii
 GLfloat angle;
-GLfloat lightAngle;
+GLfloat lightAngle=168.603333;
 
 float light_z = -4.0f;
+
+GLfloat corona_angle = 0.0f;
 
 //modele 3d
 gps::Model3D myModel;
 gps::Model3D ground;
 gps::Model3D lightCube;
 gps::Model3D gun;
+gps::Model3D corona;
 
 //modele incarcate automat
 int modelCount;
@@ -96,15 +99,35 @@ gps::Model3D models[MODEL_COUNT]; //modele incarcate automat
 gps::Shader myCustomShader;
 gps::Shader lightShader;
 gps::Shader depthMapShader;
+gps::Shader mySkyboxShader;
 
 //pt umbre (shadow map object si textura)
 GLuint shadowMapFBO;
 GLuint depthMapTexture;
 
 
+//glm::vec3 Corona_pos(-0.1343,3.25672,-1.56099);
+glm::vec3 Corona_pos(-0.33,3.25672f,-1.3f);
+
 //jump
 bool jump = false;
 float ax = 0.0f;
+
+//skybox
+gps::SkyBox skybox;
+
+
+void InitSkybox(){
+    std::vector<const GLchar*> faces;
+
+    faces.push_back("skybox/nightsky_rt.tga");
+    faces.push_back("skybox/nightsky_lf.tga");
+    faces.push_back("skybox/nightsky_up.tga");
+    faces.push_back("skybox/nightsky_dn.tga");
+    faces.push_back("skybox/nightsky_bk.tga");
+    faces.push_back("skybox/nightsky_ft.tga");
+    skybox.Load(faces);
+}
 
 //ia din foldere si subfoldere toate modelele si le randeaza
 void importModels(const char * path){
@@ -134,6 +157,26 @@ void importModels(const char * path){
         closedir(d);
     }
 }
+
+
+void sendSpotlightData(gps::Shader shader){
+    
+    //light 1
+    glm::vec3 pos = glm::vec3(0.0f, 0.5f, 2.5f);
+    //glm::vec3 dir = myCamera.cameraDirection;
+    
+    glUniform3fv(glGetUniformLocation(shader.shaderProgram,"spotlight_loc[0].position"),1,glm::value_ptr(myCamera.cameraDirection));
+    glUniform3fv(glGetUniformLocation(shader.shaderProgram,"spotlight_loc[0].direction"),1,glm::value_ptr(myCamera.cameraDirection));
+    
+    glUniform1f(glGetUniformLocation(shader.shaderProgram,"spotlight_loc[0].cutOff"),      glm::cos(glm::radians(12.5f)));
+    glUniform1f(glGetUniformLocation(shader.shaderProgram,"spotlight_loc[0].outerCutOff"), glm::cos(glm::radians(17.5f)));
+    
+    glUniform1f(glGetUniformLocation(shader.shaderProgram, "spotlight_loc[0].constant"),  1.0f);
+    glUniform1f(glGetUniformLocation(shader.shaderProgram, "spotlight_loc[0].linear"),    0.09);
+    glUniform1f(glGetUniformLocation(shader.shaderProgram, "spotlight_loc[0].quadratic"), 0.032);
+    
+}
+
 
 GLenum glCheckError_(const char *file, int line)
 {
@@ -265,7 +308,7 @@ void processMovement()
     }
 
 	if (pressedKeys[GLFW_KEY_J]) {
-
+        printf("Angle %f",lightAngle);
 		lightAngle += 0.3f;
 		if (lightAngle > 360.0f)
 			lightAngle -= 360.0f;
@@ -275,6 +318,7 @@ void processMovement()
 	}
 
 	if (pressedKeys[GLFW_KEY_L]) {
+        printf("Angle %f",lightAngle);
 		lightAngle -= 0.3f; 
 		if (lightAngle < 0.0f)
 			lightAngle += 360.0f;
@@ -381,16 +425,20 @@ void initModels()
     //auto load
     importModels("./objects/auto-load/");
 	//myModel = gps::Model3D("objects/nanosuit/nanosuit.obj", "objects/nanosuit/");
-	ground = gps::Model3D("objects/ground/ground.obj", "objects/ground/");
+	//ground = gps::Model3D("objects/ground/ground.obj", "objects/ground/");
 	lightCube = gps::Model3D("objects/cube/cube.obj", "objects/cube/");
     gun = gps::Model3D("objects/weapon/gun_and_arms.obj", "objects/weapon/");
+    corona = gps::Model3D("objects/corona/Corona.obj","objects/corona/");
 }
+
+
 
 void initShaders()
 {
 	myCustomShader.loadShader("shaders/shaderStart.vert", "shaders/shaderStart.frag");
 	lightShader.loadShader("shaders/lightCube.vert", "shaders/lightCube.frag");
 	depthMapShader.loadShader("shaders/simpleDepthMap.vert", "shaders/simpleDepthMap.frag");
+    mySkyboxShader.loadShader("shaders/skyboxShader.vert", "shaders/skyboxShader.frag");
 }
 
 void initUniforms()
@@ -431,9 +479,12 @@ void initUniforms()
     glUniform3fv(lightPosLoc,1,glm::value_ptr(lightPos[1]));
   
     
+    sendSpotlightData(myCustomShader);
+    
 	lightShader.useShaderProgram();
 	glUniformMatrix4fv(glGetUniformLocation(lightShader.shaderProgram, "projection"), 1, GL_FALSE, glm::value_ptr(projection));
 }
+
 
 //this function draws the auto loaded models
 void drawAutoModels(gps::Shader shader)
@@ -450,6 +501,7 @@ void drawAutoModels(gps::Shader shader)
 
 void renderScene()
 {
+    corona_angle+=0.01f;
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	processMovement();	
@@ -481,6 +533,18 @@ void renderScene()
 						glm::value_ptr(model));
 
 	ground.Draw(depthMapShader);
+    
+    //corona
+    model = glm::translate(glm::mat4(1.0f),Corona_pos);
+    model = glm::rotate(model,corona_angle,glm::vec3(0.0f,1.0f,0.0f));
+    
+    glUniformMatrix4fv(glGetUniformLocation(depthMapShader.shaderProgram, "model"),
+                       1,
+                       GL_FALSE,
+                       glm::value_ptr(model));
+    corona.Draw(depthMapShader);
+    
+    
     
     //=======================AUTO MODELS ======================================================
     
@@ -531,6 +595,9 @@ void renderScene()
     glUniform3fv(lightPosLoc,1,glm::value_ptr(lightPos[1]));
     
     
+    //spotlights
+    sendSpotlightData(myCustomShader);
+    
 	//bind the depth map
 	glActiveTexture(GL_TEXTURE3);
 	glBindTexture(GL_TEXTURE_2D, depthMapTexture);
@@ -550,6 +617,22 @@ void renderScene()
 	glUniformMatrix3fv(normalMatrixLoc, 1, GL_FALSE, glm::value_ptr(normalMatrix));
 
 	ground.Draw(myCustomShader);
+    
+    //corona
+    model = glm::translate(glm::mat4(1.0f),Corona_pos);
+    model = glm::rotate(model,corona_angle,glm::vec3(0.0f,1.0f,0.0f));
+    
+    glUniformMatrix4fv(glGetUniformLocation(myCustomShader.shaderProgram, "model"),
+                       1,
+                       GL_FALSE,
+                       glm::value_ptr(model));
+    
+    //create normal matrix
+    normalMatrix = glm::mat3(glm::inverseTranspose(view*model));
+    //send normal matrix data to shader
+    glUniformMatrix3fv(normalMatrixLoc, 1, GL_FALSE, glm::value_ptr(normalMatrix));
+   
+    corona.Draw(myCustomShader);
 
     //======================================== AUTO MODELS DRAW ================================
     //create model matrix for nanosuit
@@ -593,19 +676,39 @@ void renderScene()
     glUniformMatrix3fv(normalMatrixLoc, 1, GL_FALSE, glm::value_ptr(normalMatrix));
     gun.Draw(myCustomShader);
     
+    model = glm::rotate(glm::mat4(1.0f), glm::radians(angle), glm::vec3(0, 1, 0));
+    //send model matrix data to shader
+    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+    
+    //compute normal matrix
+    normalMatrix = glm::mat3(glm::inverseTranspose(view*model));
+    //send normal matrix data to shader
+    glUniformMatrix3fv(normalMatrixLoc, 1, GL_FALSE, glm::value_ptr(normalMatrix));
     
 	//draw a white cube around the light
+    //========================================CUBE==================================================
+	lightShader.useShaderProgram();
 
-//	lightShader.useShaderProgram();
-//
-//	glUniformMatrix4fv(glGetUniformLocation(lightShader.shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
-//
-//	model = glm::rotate(glm::mat4(1.0f), glm::radians(lightAngle), glm::vec3(0.0f, 1.0f, 0.0f));
-//	model = glm::translate(model, lightDir);
-//	model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
-//	glUniformMatrix4fv(glGetUniformLocation(lightShader.shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
-//
-//	lightCube.Draw(lightShader);
+	glUniformMatrix4fv(glGetUniformLocation(lightShader.shaderProgram, "view"), 1, GL_FALSE, glm::value_ptr(view));
+
+	model = glm::rotate(glm::mat4(1.0f), glm::radians(lightAngle), glm::vec3(0.0f, 1.0f, 0.0f));
+	model = glm::translate(model, lightDir);
+	model = glm::scale(model, glm::vec3(0.05f, 0.05f, 0.05f));
+	glUniformMatrix4fv(glGetUniformLocation(lightShader.shaderProgram, "model"), 1, GL_FALSE, glm::value_ptr(model));
+
+	lightCube.Draw(lightShader);
+    
+    //========================================SKYBOX================================================
+    mySkyboxShader.useShaderProgram();
+    view = myCamera.getViewMatrix();
+    glUniformMatrix4fv(glGetUniformLocation(mySkyboxShader.shaderProgram, "view"), 1, GL_FALSE,
+                       glm::value_ptr(view));
+    
+    projection = glm::perspective(glm::radians(45.0f), (float)retina_width / (float)retina_height, 0.1f, 1000.0f);
+    glUniformMatrix4fv(glGetUniformLocation(mySkyboxShader.shaderProgram, "projection"), 1, GL_FALSE,
+                       glm::value_ptr(projection));
+    
+    skybox.Draw(mySkyboxShader, view, projection);
 }
 
 int main(int argc, const char * argv[]) {
@@ -621,7 +724,8 @@ int main(int argc, const char * argv[]) {
 	initFBOs();
 	initModels();
 	initShaders();
-	initUniforms();	
+	initUniforms();
+    InitSkybox();
 	glCheckError();
     
     
@@ -630,6 +734,7 @@ int main(int argc, const char * argv[]) {
 
 		glfwPollEvents();
 		glfwSwapBuffers(glWindow);
+        usleep(17000);
 	}
 
 	//close GL context and any other GLFW resources

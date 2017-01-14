@@ -7,7 +7,7 @@
 //
 
 #include "Camera.hpp"
-//#define GODMODE
+#define GODMODE
 
 
 glm::mat4 viewMatrix;
