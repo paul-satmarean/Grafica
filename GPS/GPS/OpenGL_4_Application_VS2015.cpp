@@ -28,7 +28,7 @@
 
 
 #define MODEL_COUNT 100
-#define LIGHT_COUNT 2
+#define LIGHT_COUNT 6
 
 
 
@@ -105,6 +105,13 @@ gps::Shader mySkyboxShader;
 GLuint shadowMapFBO;
 GLuint depthMapTexture;
 
+//lights
+//-8.83827  1.75796 -11.5585 ;-6.6647;-1.49016; 3.8118;-8.74244
+
+// 8.05896  1.75796 -8.74244 ; -11.5585 ;-6.6647;-1.49016; 3.8118;
+
+//lightPos[0] = glm::vec3(-8.83827f,1.75796f,-11.5585);
+
 
 //glm::vec3 Corona_pos(-0.1343,3.25672,-1.56099);
 glm::vec3 Corona_pos(-0.33,3.25672f,-1.3f);
@@ -112,6 +119,10 @@ glm::vec3 Corona_pos(-0.33,3.25672f,-1.3f);
 //jump
 bool jump = false;
 float ax = 0.0f;
+
+//shoot
+bool shoot = false;
+float s_angle = 0.0f;
 
 //skybox
 gps::SkyBox skybox;
@@ -269,7 +280,11 @@ void mouseCallback(GLFWwindow* window, double xpos, double ypos)
 
 void processMovement()
 {
-
+    
+    if(pressedKeys[GLFW_KEY_F]){
+        printf("o intrat\n");
+        shoot=true;
+    }
 	if (pressedKeys[GLFW_KEY_Q]) {
 		angle += 0.1f;
 		if (angle > 360.0f)
@@ -298,9 +313,11 @@ void processMovement()
 		myCamera.move(gps::MOVE_RIGHT, cameraSpeed);
 	}
     if (pressedKeys[GLFW_KEY_X]){
+        printf("light_z: %f\n",light_z);
         light_z -= 0.2f;
     }
     if (pressedKeys[GLFW_KEY_Z]){
+        printf("light_z: %f\n",light_z);
         light_z += 0.2f;
     }
     if (pressedKeys[GLFW_KEY_SPACE]) {
@@ -467,8 +484,17 @@ void initUniforms()
 	lightColorLoc = glGetUniformLocation(myCustomShader.shaderProgram, "lightColor");
 	glUniform3fv(lightColorLoc, 1, glm::value_ptr(lightColor));
     
+    //lights
+    //-8.83827  1.75796 -11.5585 ;-6.6647;-1.49016; 3.8118;-8.74244
+    
+    // 8.05896  1.75796 -8.74244 ; -11.5585 ;-6.6647;-1.49016; 3.8118;
+    
+    
+    
+    
     //lumina 1
-    lightPos[0] = glm::vec3(0.0f,1.0f,4.0f);
+    //lightPos[0] = glm::vec3(0.0f,1.0f,4.0f);
+    lightPos[0] = glm::vec3(-8.83827f,1.75796f,-11.5585);
     lightPosLoc = glGetUniformLocation(myCustomShader.shaderProgram,"light_pos[0]");
     glUniform3fv(lightPosLoc,1,glm::value_ptr(lightPos[0]));
    
@@ -478,6 +504,23 @@ void initUniforms()
     lightPosLoc = glGetUniformLocation(myCustomShader.shaderProgram,"light_pos[1]");
     glUniform3fv(lightPosLoc,1,glm::value_ptr(lightPos[1]));
   
+    //lumina 3
+    lightPos[2] = glm::vec3(-50.0f,-50.0f,-50.0f);
+    lightPosLoc = glGetUniformLocation(myCustomShader.shaderProgram,"light_pos[2]");
+    glUniform3fv(lightPosLoc,1,glm::value_ptr(lightPos[2]));
+    
+    //lumina 4
+    lightPos[3] = glm::vec3(8.05896f,1.75796f,8.74244f);
+    lightPosLoc = glGetUniformLocation(myCustomShader.shaderProgram,"light_pos[3]");
+    glUniform3fv(lightPosLoc,1,glm::value_ptr(lightPos[3]));
+    
+    lightPos[4] = glm::vec3(8.05896f,1.75796f,-11.5585);
+    lightPosLoc = glGetUniformLocation(myCustomShader.shaderProgram,"light_pos[4]");
+    glUniform3fv(lightPosLoc,1,glm::value_ptr(lightPos[4]));
+    
+    lightPos[5] = glm::vec3(-8.83827f,1.75796f,8.74244f);
+    lightPosLoc = glGetUniformLocation(myCustomShader.shaderProgram,"light_pos[5]");
+    glUniform3fv(lightPosLoc,1,glm::value_ptr(lightPos[5]));
     
     sendSpotlightData(myCustomShader);
     
@@ -595,6 +638,11 @@ void renderScene()
     glUniform3fv(lightPosLoc,1,glm::value_ptr(lightPos[1]));
     
     
+    
+//    model = glm::translate(glm::mat4(1.0f),lightPos[2]);
+//    glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+//    lightCube.Draw(myCustomShader);
+    
     //spotlights
     sendSpotlightData(myCustomShader);
     
@@ -659,14 +707,34 @@ void renderScene()
         camPos.y+=glm::sin(glm::radians(ax))*0.049f;
         printf("Sinus: %f\n",camPos.y);
         myCamera.cameraPosition= camPos;
+        //lumina 3
+        lightPos[2] = glm::vec3(-50.0f,-50.0f,-50.0f);
+        lightPosLoc = glGetUniformLocation(myCustomShader.shaderProgram,"light_pos[2]");
+        glUniform3fv(lightPosLoc,1,glm::value_ptr(lightPos[2]));
     }
-    
-    
-    //glm::vec3(0.0f,-1.7f,2.5f)
     glm::mat4 model1 = glm::translate(glm::mat4(1.0f), myCamera.cameraPosition);
     model1 = glm::rotate(model1,glm::radians(-cameraYaw+98.0f),glm::vec3(0.0f,1.0f,0.0f));
     model1 = glm::rotate(model1,glm::radians(-cameraPitch),glm::vec3(1.0f,0.0f,0.0f));
     model1 = glm::translate(model1, glm::vec3(-0.02f,-1.739999,0.030002));
+    if(shoot){
+        s_angle +=30.0f;
+        if(s_angle>180.0){
+            s_angle=0.0f;
+            shoot=false;
+        }
+        lightPos[2] = myCamera.cameraPosition+glm::vec3(-0.2f,-1.6f,-1.4);
+        lightPosLoc = glGetUniformLocation(myCustomShader.shaderProgram,"light_pos[2]");
+        glUniform3fv(lightPosLoc,1,glm::value_ptr(lightPos[2]));
+        //glm::vec3 newpos = glm::vec3(0.0f,glm::sin(glm::radians(s_angle))*0.002f,0.0f)
+        model1 = glm::translate(model1,glm::vec3(0.0f,0.0f,-(glm::sin(glm::radians(s_angle))*0.018f)));
+        
+    }else{
+        lightPos[2] = glm::vec3(-50.0f,-50.0f,-50.0f);
+        lightPosLoc = glGetUniformLocation(myCustomShader.shaderProgram,"light_pos[2]");
+        glUniform3fv(lightPosLoc,1,glm::value_ptr(lightPos[2]));
+
+    }
+    
     
     glUniformMatrix4fv(glGetUniformLocation(myCustomShader.shaderProgram,"model"), 1, GL_FALSE, glm::value_ptr(model1));
     

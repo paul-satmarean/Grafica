@@ -1,6 +1,6 @@
 #version 410 core
 
-#define LIGHT_COUNT 2
+#define LIGHT_COUNT 6
 #define SPOTLIGHT_COUNT 1
 
 in vec3 normal;
